@@ -31,6 +31,7 @@ import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
 
 /**
  * Security Configuration.
@@ -59,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	public void configure(WebSecurity web) throws Exception {
 		web
 			.ignoring()
-				.antMatchers("/resources/**");
+				.antMatchers("/**/*.css", "/**/*.png", "/**/*.gif", "/**/*.jpg");
 	}
 	
 	@Override
@@ -68,6 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 			.formLogin()
 				.loginPage("/signin")
 				.loginProcessingUrl("/signin/authenticate")
+				.defaultSuccessUrl("/connect")
 				.failureUrl("/signin?param.error=bad_credentials")
 			.and()
 				.logout()
@@ -75,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 					.deleteCookies("JSESSIONID")
 			.and()
 				.authorizeRequests()
-					.antMatchers("/admin/**", "/favicon.ico", "/resources/**", "/auth/**", "/signin/**", "/signup/**", "/disconnect/facebook").permitAll()
+					.antMatchers("/", "/webjars/**", "/admin/**", "/favicon.ico", "/resources/**", "/auth/**", "/signin/**", "/signup/**", "/disconnect/facebook").permitAll()
 					.antMatchers("/**").authenticated()
 			.and()
 				.rememberMe();
@@ -89,6 +91,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	@Bean
 	public TextEncryptor textEncryptor() {
 		return Encryptors.noOpText();
+	}
+	
+	@Bean
+	public SpringSecurityDialect springSecurityDialect() {
+		return new SpringSecurityDialect();
 	}
 
 }
